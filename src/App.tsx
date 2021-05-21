@@ -13,6 +13,9 @@ function App() {
       console.log(res);
     })
 
+    console.log('hey')
+    console.log('hey1')
+
   }, []);
   return (
     <div className="App">
