@@ -1,26 +1,20 @@
-import React, { useEffect } from 'react';
-import axios from 'axios'
+import React from "react";
+import Layout from "./components/Layout/Layout";
+import { Switch, Route } from 'react-router-dom';
+import Home from "./components/Home/Home";
+import RegisterLogin from "./components/Register_login/RegisterLogin";
+import Register from "./components/Register_login/Register";
 
 function App() {
-
-
-  useEffect(() => {
-   
-    axios.get('http://localhost:3002/api/product/brands').then(res=>{
-      console.log(res);
-    })
-    axios.get('http://localhost:3002/api/product/woods').then(res=>{
-      console.log(res);
-    })
-
-    console.log('hey')
-    console.log('hey1')
-
-  }, []);
   return (
-    <div className="App">
-     <h1>WAVES</h1>
-    </div>
+    <Layout>
+      <Switch>
+
+        <Route path='/register' exact component={Register}/>
+        <Route path='/register_login' exact component={RegisterLogin}/>
+        <Route path='/' exact component={Home}/>
+      </Switch>
+    </Layout>
   );
 }
 
