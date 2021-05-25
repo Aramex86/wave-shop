@@ -1,18 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useAppDispatch, useAppSelector } from "../Store/hooks/hooks";
-import { LoginUserType, UserSuccess } from "../../Types/types";
+import { LoginUserType } from "../../Types/types";
 import { authUser, getUser, selectUser } from "../Store/slices/userSlice";
-import { usersApi } from "../../api/api";
-import { Redirect, useHistory } from "react-router-dom";
-
-interface LogiForm {
-  password: string;
-  email: string;
-}
+import { useHistory } from "react-router-dom";
 
 const validate = (values: any) => {
-  const errors = {} as LogiForm;
+  const errors = {} as LoginUserType;
 
   if (!values.password) {
     errors.password = "Required";
@@ -33,8 +27,23 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const [data, setData] = useState<LoginUserType>();
 
-  const formik = useFormik({
+  useEffect(() => {
+    if (data) {
+      dispatch(authUser(data));
+    }
+  }, [data]);
+
+  const ifUser = () => {
+    if (user?.loginSuccess === false) {
+      return null;
+    } else if (user?.loginSuccess === true) {
+      return history.push("/user/dashboard");
+    }
+  };
+
+  const formik = useFormik<LoginUserType>({
     initialValues: {
       email: "",
       password: "",
@@ -42,12 +51,12 @@ const Login = () => {
     validate,
     onSubmit: (values: LoginUserType) => {
       console.log(values);
-      dispatch(authUser(values));
-      if (user) return history.push("/users/dashboard");
+      setData(values);
+      ifUser();
     },
   });
 
-  console.log(user);
+  console.log(data);
   return (
     <div className="signin_wrapper">
       <form onSubmit={formik.handleSubmit}>
@@ -76,6 +85,10 @@ const Login = () => {
 
         <button type="submit">Log in</button>
       </form>
+
+      {user?.loginSuccess === false ? (
+        <p style={{ color: "red", fontWeight: 500 }}>{user.message}</p>
+      ) : null}
     </div>
   );
 };
